@@ -1,13 +1,13 @@
 ## EX. NO:2 IMPLEMENTATION OF PLAYFAIR CIPHER
 
- 
+## DATE: 20-03-2025 
 
 ## AIM:
  
 
  
 
-To write a C program to implement the Playfair Substitution technique.
+To write a python program to implement the Playfair Substitution technique.
 
 ## DESCRIPTION:
 
@@ -34,10 +34,113 @@ STEP-5: Display the obtained cipher text.
 
 
 
-Program:
+## Program:
+```c
+def generate_key_square(key):
+    key = key.replace(' ', '').upper().replace('J', 'I')
+    key_square = []
+    used_chars = set()
+
+    for char in key:
+        if char not in used_chars and char.isalpha():
+            key_square.append(char)
+            used_chars.add(char)
+
+    for char in 'ABCDEFGHIKLMNOPQRSTUVWXYZ':
+        if char not in used_chars:
+            key_square.append(char)
+
+    matrix = [key_square[i:i + 5] for i in range(0, 25, 5)]
+    print("Key Square:")
+    for row in matrix:
+        print(' '.join(row))
+    return matrix
+
+def find_position(matrix, char):
+    for i in range(5):
+        for j in range(5):
+            if matrix[i][j] == char:
+                return i, j
+
+def playfair_encrypt_pair(ch1, ch2, key_square):
+    row1, col1 = find_position(key_square, ch1)
+    row2, col2 = find_position(key_square, ch2)
+
+    if row1 == row2:
+        return key_square[row1][(col1 + 1) % 5] + key_square[row2][(col2 + 1) % 5]
+    elif col1 == col2:
+        return key_square[(row1 + 1) % 5][col1] + key_square[(row2 + 1) % 5][col2]
+    else:
+        return key_square[row1][col2] + key_square[row2][col1]
+
+def playfair_decrypt_pair(ch1, ch2, key_square):
+    row1, col1 = find_position(key_square, ch1)
+    row2, col2 = find_position(key_square, ch2)
+
+    if row1 == row2:
+        return key_square[row1][(col1 - 1) % 5] + key_square[row2][(col2 - 1) % 5]
+    elif col1 == col2:
+        return key_square[(row1 - 1) % 5][col1] + key_square[(row2 - 1) % 5][col2]
+    else:
+        return key_square[row1][col2] + key_square[row2][col1]
+
+def playfair_encrypt(text, key):
+    key_square = generate_key_square(key)
+    text = text.replace(' ', '').upper().replace('J', 'I')
+    formatted_text = ''
+    i = 0
+
+    while i < len(text):
+        ch1 = text[i]
+        ch2 = text[i + 1] if i + 1 < len(text) else 'X'
+
+        if ch1 == ch2:
+            formatted_text += ch1 + 'X'
+            i += 1
+        else:
+            formatted_text += ch1 + ch2
+            i += 2
+
+    if len(formatted_text) % 2 != 0:
+        formatted_text += 'X'
+
+    cipher_text = ''
+    for i in range(0, len(formatted_text), 2):
+        cipher_text += playfair_encrypt_pair(formatted_text[i], formatted_text[i + 1], key_square)
+
+    return cipher_text
+
+def playfair_decrypt(text, key):
+    key_square = generate_key_square(key)
+    decrypted_text = ''
+
+    for i in range(0, len(text), 2):
+        decrypted_text += playfair_decrypt_pair(text[i], text[i + 1], key_square)
+
+    return decrypted_text.replace('X', '')
+
+def main():
+    key = input("Enter key: ")
+    text = input("Enter the plain text: ")
+
+    encrypted_text = playfair_encrypt(text, key)
+    print(f"\nEntered text: {text}\nCipher Text: {encrypted_text}")
+
+    decrypted_text = playfair_decrypt(encrypted_text, key)
+    print(f"Decrypted Text: {decrypted_text}")
+
+if __name__ == "__main__":
+    main()
+
+
+```
 
 
 
 
+## Output:
+![image](https://github.com/user-attachments/assets/fcb2defa-11e9-426c-bf06-ac5538c73bd7)
 
-Output:
+
+## Result:
+Thus, the Playfair Cipher Substitution algorithm is implemented using python programming and executed successfully.
